@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Flash Cards</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121a33;
+      --text: #eef1ff;
+      --muted: #aeb6da;
+      --accent: #7aa2ff;
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(1200px 700px at 20% 10%, #1a2550 0%, var(--bg) 60%);
+      color: var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      padding: 20px;
+    }
+
+    .app {
+      width: min(920px, 100%);
+      display: grid;
+      gap: 14px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      background: rgba(18, 26, 51, 0.75);
+      border: 1px solid rgba(122, 162, 255, 0.18);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .title {
+      display: grid;
+      gap: 4px;
+    }
+
+    .title h1 {
+      font-size: 16px;
+      margin: 0;
+      letter-spacing: .3px;
+      font-weight: 700;
+    }
+    .title .meta {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    button {
+      border: 1px solid rgba(122, 162, 255, 0.22);
+      background: rgba(11, 16, 32, 0.35);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform .06s ease, background .2s ease, border-color .2s ease;
+      font-weight: 650;
+      letter-spacing: .2px;
+    }
+    button:hover { background: rgba(122, 162, 255, 0.12); border-color: rgba(122, 162, 255, 0.45); }
+    button:active { transform: translateY(1px); }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+
+    .stage {
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background: rgba(18, 26, 51, 0.55);
+      border: 1px solid rgba(122, 162, 255, 0.18);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      min-height: 420px;
+    }
+
+    /* Card flip */
+    .card-wrap {
+      width: min(560px, 92vw);
+      height: 320px;
+      perspective: 1200px;
+      position: relative;
+    }
+
+    .card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 520ms cubic-bezier(.2,.75,.2,1);
+      cursor: pointer;
+      border-radius: 20px;
+    }
+
+    .card.is-flipped { transform: rotateY(180deg); }
+
+    .face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+-webkit-backface-visibility: hidden;
+      border-radius: 20px;
+      padding: 22px 22px;
+      display: grid;
+      align-content: center;
+      gap: 12px;
+      box-shadow: 0 10px 28px rgba(0,0,0,.35);
+      border: 1px solid rgba(122, 162, 255, 0.20);
+      overflow: hidden;
+    }
+
+    .front {
+      background: linear-gradient(135deg, rgba(122,162,255,.20), rgba(18,26,51,.75));
+    }
+    .back {
+      background: linear-gradient(to right, #0f1a2e, #3a7f90);
+      transform: rotateY(180deg);
+     
+    }
+
+    .label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--muted);
+    }
+
+    .big {
+      font-size: clamp(24px, 3.2vw, 34px);
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .body {
+      font-size: 16px;
+      line-height: 1.5;
+      color: rgba(238, 241, 255, 0.92);
+      white-space: pre-wrap;
+    }
+
+    .hint {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .navRow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .arrow {
+      width: 48px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      padding: 0;
+    }
+
+    .pill {
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(122, 162, 255, 0.18);
+      background: rgba(11, 16, 32, 0.25);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .footerNote {
+      font-size: 12px;
+      color: rgba(174, 182, 218, 0.85);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="title">
+        <h1>Flash Cards</h1>
+        <div class="meta">
+          Data source: <code>Map(name → info)</code> · Controls: ← / → / Space
+        </div>
+      </div>
+      <div class="controls">
+        <button id="flipBtn" type="button">Flip</button>
+        <button id="shuffleBtn" type="button">Shuffle</button>
+        <button id="resetBtn" type="button">Reset</button>
+      </div>
+    </header>
+
+    <section class="stage">
+      <div class="card-wrap" aria-live="polite">
+        <div id="card" class="card" role="button" tabindex="0" aria-label="Flash card. Click to flip.">
+          <div class="face front">
+            <div class="label">Front</div>
+            <div id="frontText" class="big"></div>
+            <div class="hint">Click the card or press <b>Space</b> to flip.</div>
+          </div>
+          <div class="face back">
+            <div class="label">Back</div>
+            <div id="backText" class="body"></div>
+            <div class="hint">Use <b>←</b> / <b>→</b> to change cards.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="navRow">
+        <button id="prevBtn" class="arrow" type="button" aria-label="Previous card">◀</button>
+        <div id="counter" class="pill" aria-label="Card counter"></div>
+        <button id="nextBtn" class="arrow" type="button" aria-label="Next card">▶</button>
+      </div>
+    </section>
+
+    <div class="footerNote">
+      Tip: edit the <code>cardsMap</code> in the script to change your flashcards.
+    </div>
+  </main>
+
+  <script>
+    // ---------------------------
+    // 1) DATA: Hash map (Map) keyed by name
+    // ---------------------------
+
+
+ const cardsMap = new Map([
+  ["1. Which is NOT one of Monkey’s powers?", "reading minds"],
+  ["2. Where is Monkey imprisoned for 500 years?", "under a mountain"],
+  ["3. The priest meets the Monkey King while being chased by a ___.", "tiger"],
+  ["4. The priest’s quest is to return ___ from India.", "sacred scriptures"],
+  ["5. The goddess ___ explains what Monkey must do to get rid of the golden crown.", "Guanyin"],
+  ["6. The dragon who eats the priest’s horse turns into a ___.", "white horse"],
+  ["7. The father warns his child that the White Bone Lady (WBL) is coming to ___.", "eat her"],
+  ["8. In the original story, which is NOT one of the forms the White Bone Demon takes?", "Young boy"],
+  ["9. The pig says to just call him ___.", "Pigsy - bajie"],
+  ["10. The blue man says to call him ___.", "Sandy wujing"],
+  ["11. The WBL won’t have to reincarnate anymore if she ___.", "eats the priest"],
+  ["12. In the film, the WBL appears as a/an ___ to the four pilgrims.", "innocent woman"],
+  ["13. Of the four pilgrims, we would expect ___ to chase after women.", "Pigsy - Bajie"],
+  ["14. The priest tells Monkey King that he feels the same pain as Monkey when ___.", "the crown tightens"],
+  ["15. The WBL tries to drive a wedge between the priest and Monkey by telling Monkey that ___.", "the preist wants to kill him"],
+  ["16. ___ turns out to be the one draining the children to try to restore their body.", "the king"],
+  ["17. The priest goes alone to visit the WBL in hopes of ___.", "redeeming her"],
+  ["18. How did Monkey try to interfere with the priest’s visit to the WBL?", "he disguised himself as the priest"],
+  ["19. Monkey beats ___ that he thought was trying to knife the priest.", "a kid"],
+  ["20. Monkey next strikes down ___, leading the priest to punish him with the golden crown.", "the daugters mom"],
+  ["21. After this scene, it seems ___ must be dead.", "White Bone Lady"],
+  ["22. ___ rides the horse up the side of a mountain.", "Sandy-wujing"],
+  ["23. Sandy and Pigsy fight an army of ___ when looking for the priest.", "skeletons"],
+  ["24. ___ wears Monkey’s armor during this fight.", "Pigsy"],
+  ["25. Guanyin tells Monkey he sees the truth, but the priest sees the ___.", "the heart"],
+  ["26. True/False the priest willingly gives up his life for the WBL to consume.", "True"],
+  ["27. In the climactic battle, WBL transforms into a giant ___.", "skeleton"],
+  ["28. The primary superpower that Monkey uses to defeat the WBL is ___.", "cloning himself"],
+  ["29. ___ kills the priest.", "Monkey"],
+  ["30. The last time we see the priest’s body, it is ___.", "transforming from stone to flesh"],
+  ["31. One way to introduce a quotation is with a short sentence and a ___.", "comma"],
+  ["32. Another way is with a long sentence and a ___.", "colon"],
+  ["33. Beginning a sentence with a quote is called using a “___” quote.", "dropped"],
+  ["34. Periods and commas go ___ quotation marks; colons and semicolons go ___ quotation marks.", "inside, outside"],
+  ["35. Single quotation marks are used only for ___.", "quotes within quotes"],
+  ["36. You should never see ellipses at the ___ of a quotation.", "beginning"],
+  ["37. When using citations, end-punctuation goes ___.", "after the citation"]
+]);
+
+    // Convert Map -> ordered list for navigation.
+    // Each item is { name, info }.
+    let cards = Array.from(cardsMap, ([name, info]) => ({ name, info }));
+    let index = 0;
+    let flipped = false;
+
+    // ---------------------------
+    // 2) ELEMENTS
+    // ---------------------------
+    const cardEl = document.getElementById("card");
+    const frontTextEl = document.getElementById("frontText");
+    const backTextEl  = document.getElementById("backText");
+    const counterEl   = document.getElementById("counter");
+
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const flipBtn = document.getElementById("flipBtn");
+    const shuffleBtn = document.getElementById("shuffleBtn");
+    const resetBtn = document.getElementById("resetBtn");
+
+    // ---------------------------
+    // 3) RENDER
+    // ---------------------------
+    function render() {
+      if (cards.length === 0) {
+        frontTextEl.textContent = "No cards";
+        backTextEl.textContent = "Add entries to cardsMap.";
+        counterEl.textContent = "0 / 0";
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+        flipBtn.disabled = true;
+        return;
+      }
+
+      const current = cards[index];
+      frontTextEl.textContent = current.name;
+      backTextEl.textContent = current.info;
+
+      counterEl.textContent = `${index + 1} / ${cards.length}`;
+
+      // Wrap navigation (always enabled)
+      prevBtn.disabled = false;
+      nextBtn.disabled = false;
+      flipBtn.disabled = false;
+
+      cardEl.classList.toggle("is-flipped", flipped);
+    }
+
+    function setFlipped(value) {
+      flipped = value;
+      cardEl.classList.toggle("is-flipped", flipped);
+    }
+
+    // ---------------------------
+    // 4) ACTIONS
+    // ---------------------------
+    function flip() {
+      setFlipped(!flipped);
+    }
+
+    function next() {
+      index = (index + 1) % cards.length;
+      setFlipped(false);
+      render();
+    }
+
+    function prev() {
+      index = (index - 1 + cards.length) % cards.length;
+      setFlipped(false);
+      render();
+    }
+
+    function shuffle() {
+      // Fisher–Yates shuffle
+      for (let i = cards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [cards[i], cards[j]] = [cards[j], cards[i]];
+      }
+      index = 0;
+      setFlipped(false);
+      render();
+    }
+
+    function reset() {
+      cards = Array.from(cardsMap, ([name, info]) => ({ name, info }));
+      index = 0;
+      setFlipped(false);
+      render();
+    }
+
+    // ---------------------------
+    // 5) EVENTS
+    // ---------------------------
+    cardEl.addEventListener("click", flip);
+    cardEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") flip();
+    });
+
+    flipBtn.addEventListener("click", flip);
+    nextBtn.addEventListener("click", next);
+    prevBtn.addEventListener("click", prev);
+    shuffleBtn.addEventListener("click", shuffle);
+    resetBtn.addEventListener("click", reset);
+
+    // Keyboard shortcuts
+    window.addEventListener("keydown", (e) => {
+      // Don't steal keystrokes if user is typing in an input (if you add one later)
+      const tag = document.activeElement?.tagName?.toLowerCase();
+      if (tag === "input" || tag === "textarea") return;
+
+      if (e.key === "ArrowRight") next();
+      else if (e.key === "ArrowLeft") prev();
+      else if (e.key === " " || e.key === "Spacebar") {
+        e.preventDefault();
+        flip();
+      }
+    });
+
+    // Initial render
+    render();
+  </script>
+</body>
+</html>

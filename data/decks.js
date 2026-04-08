@@ -40,5 +40,29 @@ module.exports = {
     ["35. Single quotation marks are used only for ___.", "quotes within quotes"],
     ["36. You should never see ellipses at the ___ of a quotation.", "beginning"],
     ["37. When using citations, end-punctuation goes ___.", "after the citation"]
-  ]
+  ],
+  gov3test: [
+  ["Plaintiff", "person who files a civil lawsuit"],
+  ["defendant", "person being sued or charged"],
+  ["Prosecuting attorney", "represents the state in criminal cases"],
+  ["Corporations as legal persons", "corporations may sue and be sued"],
+  ["Burden of proof in a civil case", "Preponderance of the evidence"],
+  ["Burden of proof in a criminal case", "beyond a reasonable doubt"],
+  ["Original jurisdiction", "power to try a case for the first time."],
+  ["Appellate jurisdiction", "power to review lower court decisions."],
+  ["Original jurisdiction includes", "examining evidence and determining guilt or liability."],
+  ["Grand jury", "determines whether sufficient evidence exists to indict, but does not determine guilt or innocence. Does not give a verdict."],
+  ["How long do Texas sessions last", "140 days."],
+  ["Special sessions", "Called by the governor, the governor sets the agenda, and focuses on specific issues."],
+  ["Leader of the Texas Senate", "Lieutenant Governor."],
+  ["Leader of the house", "Speaker of the house."],
+  ["What is packing", "concentrating members of one party into a single district."],
+  ["What is cracking", "spreading opposing party voters across districts to reduce incluince."],
+  ["Where are fillibusters used, and what are they.", "Only used in the senate and used to delay of block legislation."],
+  ["Texas Governor's 4 key characteristics.", "Four-year terms, no term limits, typically have prior political experience, and the most common prior career is lawyer."],
+  ["Plural executive", "many executive officials are elected independently."],
+  ["Officials that are elected independently", "attorney general, comptroller, and land commissioner."],
+  ["Impeachment process", "house approves impeachment charges, senate votes on convition."],
+  ["What type of veto does the govener have", "line item veto."]
+]
 };

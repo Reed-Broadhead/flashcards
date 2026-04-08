@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Flash Cards</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+</head>
+<body>
+  <main class="layout">
+    <aside class="sidebar">
+      <h2>Decks</h2>
+
+      <div class="deckList">
+        <% deckNames.forEach(deck => { %>
+          <button
+            class="deckBtn <%= deck === activeDeck ? 'active' : '' %>"
+            hx-get="/deck/<%= deck %>"
+            hx-target="#deck-area"
+            hx-swap="innerHTML"
+          >
+            <%= deck %>
+          </button>
+        <% }) %>
+      </div>
+    </aside>
+
+    <section id="deck-area" class="mainArea">
+      <%- include("partials/deck-stage", { activeDeck, cards }) %>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

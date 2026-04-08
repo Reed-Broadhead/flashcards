@@ -1,0 +1,42 @@
+<div
+  class="app deck-stage"
+  data-cards='<%- JSON.stringify(cards.map(([name, info]) => ({ name, info }))) %>'
+>
+  <header class="topbar">
+    <div class="title">
+      <h1><%= activeDeck %></h1>
+      <div class="meta">
+        <%= cards.length %> cards · Controls: ← / → / Space
+      </div>
+    </div>
+    <div class="controls">
+      <button id="flipBtn" type="button">Flip</button>
+      <button id="shuffleBtn" type="button">Shuffle</button>
+      <button id="resetBtn" type="button">Reset</button>
+    </div>
+  </header>
+
+  <section class="stage">
+    <div class="card-wrap" aria-live="polite">
+      <div id="card" class="card" role="button" tabindex="0" aria-label="Flash card. Click to flip.">
+        <div class="face front">
+          <div class="label">Front</div>
+          <div id="frontText" class="big"></div>
+          <div class="hint">Click the card or press <b>Space</b> to flip.</div>
+        </div>
+
+        <div class="face back">
+          <div class="label">Back</div>
+          <div id="backText" class="body"></div>
+          <div class="hint">Use <b>←</b> / <b>→</b> to change cards.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="navRow">
+      <button id="prevBtn" class="arrow" type="button" aria-label="Previous card">◀</button>
+      <div id="counter" class="pill" aria-label="Card counter"></div>
+      <button id="nextBtn" class="arrow" type="button" aria-label="Next card">▶</button>
+    </div>
+  </section>
+</div>
